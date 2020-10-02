@@ -35,10 +35,11 @@ void SampleSpec::setChannels(packet::channel_mask_t channels) {
     channels_ = channels;
 }
 
-size_t SampleSpec::num_channels() {
+size_t SampleSpec::num_channels() const {
     size_t n_ch = 0;
-    for (; channels_ != 0; channels_ >>= 1) {
-        if (channels_ & 1) {
+    packet::channel_mask_t ch_mask = channels_;
+    for (; ch_mask != 0; ch_mask >>= 1) {
+        if (ch_mask & 1) {
             n_ch++;
         }
     }

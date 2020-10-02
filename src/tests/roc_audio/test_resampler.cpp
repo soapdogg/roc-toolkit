@@ -100,8 +100,9 @@ TEST_GROUP(resampler) {
 TEST(resampler, invalid_scaling) {
     enum { ChMask = 0x1, InvalidScaling = FrameSize };
 
+    SampleSpec sample_spec = SampleSpec(0, ChMask);
     MockReader reader;
-    ResamplerReader rr(reader, buffer_pool, allocator, config, ChMask, FrameSize);
+    ResamplerReader rr(reader, buffer_pool, allocator, config, sample_spec, FrameSize);
 
     CHECK(rr.valid());
 
@@ -112,9 +113,9 @@ TEST(resampler, invalid_scaling) {
 TEST(resampler, upscaling_twice_single) {
     enum { ChMask = 0x1 };
 
+    SampleSpec sample_spec = SampleSpec(0, ChMask);
     MockReader reader;
-    ResamplerReader rr(reader, buffer_pool, allocator, config, ChMask, FrameSize);
-
+    ResamplerReader rr(reader, buffer_pool, allocator, config, sample_spec, FrameSize);
     CHECK(rr.valid());
 
     CHECK(rr.set_scaling(0.5f));
@@ -143,9 +144,10 @@ TEST(resampler, upscaling_twice_single) {
 TEST(resampler, upscaling_twice_awgn) {
     enum { ChMask = 0x1 };
 
+    SampleSpec sample_spec = SampleSpec(0, ChMask);
     MockReader reader;
-    ResamplerReader rr(reader, buffer_pool, allocator, config, ChMask, FrameSize);
-
+    ResamplerReader rr(reader, buffer_pool, allocator, config, sample_spec, FrameSize);
+    
     CHECK(rr.valid());
     CHECK(rr.set_scaling(0.5f));
 
@@ -184,9 +186,10 @@ TEST(resampler, upscaling_twice_awgn) {
 TEST(resampler, downsample) {
     enum { ChMask = 0x1 };
 
+    SampleSpec sample_spec = SampleSpec(0, ChMask);
     MockReader reader;
-    ResamplerReader rr(reader, buffer_pool, allocator, config, ChMask, FrameSize);
-
+    ResamplerReader rr(reader, buffer_pool, allocator, config, sample_spec, FrameSize);
+    
     CHECK(rr.valid());
     CHECK(rr.set_scaling(1.5f));
 
@@ -214,9 +217,10 @@ TEST(resampler, downsample) {
 TEST(resampler, two_tones_sep_channels) {
     enum { ChMask = 0x3, nChannels = 2 };
 
+    SampleSpec sample_spec = SampleSpec(0, ChMask);
     MockReader reader;
-    ResamplerReader rr(reader, buffer_pool, allocator, config, ChMask, FrameSize);
-
+    ResamplerReader rr(reader, buffer_pool, allocator, config, sample_spec, FrameSize);
+    
     CHECK(rr.valid());
     CHECK(rr.set_scaling(0.5f));
 

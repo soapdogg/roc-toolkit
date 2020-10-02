@@ -35,7 +35,7 @@ Converter::Converter(const ConverterConfig& config,
         }
         resampler_.reset(new (allocator) audio::ResamplerWriter(
                              *awriter, pool, allocator, config.resampler,
-                             config.output_channels, config.internal_frame_size),
+                             config.output_sample_spec, config.internal_frame_size),
                          allocator);
         if (!resampler_ || !resampler_->valid()) {
             return;

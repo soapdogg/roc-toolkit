@@ -82,6 +82,8 @@ struct SenderConfig {
     //! Channel mask.
     packet::channel_mask_t input_channels;
 
+    audio::SampleSpec input_sample_spec;
+
     //! Number of samples for internal frames.
     size_t internal_frame_size;
 
@@ -106,6 +108,7 @@ struct SenderConfig {
     SenderConfig()
         : input_sample_rate(DefaultSampleRate)
         , input_channels(DefaultChannelMask)
+        , input_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , internal_frame_size(DefaultInternalFrameSize)
         , packet_length(DefaultPacketLength)
         , payload_type(rtp::PayloadType_L16_Stereo)
@@ -125,6 +128,8 @@ struct ReceiverSessionConfig {
 
     //! Channel mask.
     packet::channel_mask_t channels;
+
+    audio::SampleSpec sample_spec;
 
     //! Packet payload type.
     unsigned int payload_type;
@@ -150,6 +155,7 @@ struct ReceiverSessionConfig {
     ReceiverSessionConfig()
         : target_latency(DefaultLatency)
         , channels(DefaultChannelMask)
+        , sample_spec(DefaultSampleRate, DefaultChannelMask)
         , payload_type(0) {
         latency_monitor.min_latency = target_latency * DefaultMinLatencyFactor;
         latency_monitor.max_latency = target_latency * DefaultMaxLatencyFactor;
@@ -218,6 +224,8 @@ struct ConverterConfig {
     //! Output channel mask.
     packet::channel_mask_t output_channels;
 
+    audio::SampleSpec output_sample_spec;
+
     //! Number of samples for internal frames.
     size_t internal_frame_size;
 
@@ -232,6 +240,7 @@ struct ConverterConfig {
         , output_sample_rate(DefaultSampleRate)
         , input_channels(DefaultChannelMask)
         , output_channels(DefaultChannelMask)
+        , output_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , internal_frame_size(DefaultInternalFrameSize)
         , resampling(false)
         , poisoning(false) {

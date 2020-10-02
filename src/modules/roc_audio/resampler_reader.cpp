@@ -19,9 +19,9 @@ ResamplerReader::ResamplerReader(IReader& reader,
                                  core::BufferPool<sample_t>& buffer_pool,
                                  core::IAllocator& allocator,
                                  const ResamplerConfig& config,
-                                 packet::channel_mask_t channels,
+                                 const SampleSpec& sample_spec,
                                  size_t frame_size)
-    : resampler_(allocator, config, channels, frame_size)
+    : resampler_(allocator, config, sample_spec, frame_size)
     , reader_(reader)
     , frame_size_(frame_size)
     , frames_empty_(true)
