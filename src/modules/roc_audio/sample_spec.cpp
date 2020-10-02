@@ -35,5 +35,15 @@ void SampleSpec::setChannels(packet::channel_mask_t channels) {
     channels_ = channels;
 }
 
+size_t SampleSpec::num_channels() {
+    size_t n_ch = 0;
+    for (; channels_ != 0; channels_ >>= 1) {
+        if (channels_ & 1) {
+            n_ch++;
+        }
+    }
+    return n_ch;
+}
+
 } // namespace audio
 } // namespace ro
