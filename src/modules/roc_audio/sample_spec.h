@@ -18,16 +18,16 @@ namespace audio {
 
 class SampleSpec {
 public:
-    SampleSpec(size_t sample_rate, size_t num_channels);
+    SampleSpec(size_t sample_rate, packet::channel_mask_t channels);
 
     virtual size_t getSampleRate();
     virtual void setSampleRate(size_t sample_rate);
-    virtual size_t getNumChannels();
-    virtual void setNumChannels(size_t num_channels);
+    virtual packet::channel_mask_t getChannels();
+    virtual void setChannels(packet::channel_mask_t channels);
 
 private:
     size_t sample_rate_;
-    size_t num_channels_;
+    packet::channel_mask_t channels_;
 };
 
 } // namespace audio

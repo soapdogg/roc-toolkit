@@ -14,9 +14,9 @@ namespace roc {
 namespace audio {
 
 SampleSpec::SampleSpec(size_t sample_rate,
-                       size_t num_channels) {
+                       packet::channel_mask_t channels) {
     sample_rate_ = sample_rate;
-    num_channels_ = num_channels;
+    channels_ = channels;
 }
 
 size_t SampleSpec::getSampleRate(){
@@ -27,12 +27,12 @@ void SampleSpec::setSampleRate(size_t sample_rate) {
     sample_rate_ = sample_rate;
 }
 
-size_t SampleSpec::getNumChannels(){
-    return num_channels_;
+packet::channel_mask_t SampleSpec::getChannels(){
+    return channels_;
 }
 
-void SampleSpec::setNumChannels(size_t num_channels) {
-    num_channels_ = num_channels;
+void SampleSpec::setChannels(packet::channel_mask_t channels) {
+    channels_ = channels;
 }
 
 } // namespace audio
