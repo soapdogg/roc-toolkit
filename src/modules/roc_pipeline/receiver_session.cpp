@@ -124,9 +124,14 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     if (session_config.watchdog.no_playback_timeout != 0
         || session_config.watchdog.broken_playback_timeout != 0
         || session_config.watchdog.frame_status_window != 0) {
+        audio::SampleSpec sample_spec = audio::SampleSpec(
+            common_config.output_sample_rate,
+            packet::num_channels(session_config.channels)
+        );
         watchdog_.reset(new (allocator_) audio::Watchdog(
-                            *areader, packet::num_channels(session_config.channels),
-                            session_config.watchdog, common_config.output_sample_rate,
+                            *areader, 
+                            session_config.watchdog, 
+                            sample_spec,
                             allocator_),
                         allocator_);
         if (!watchdog_ || !watchdog_->valid()) {
