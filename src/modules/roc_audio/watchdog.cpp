@@ -13,17 +13,18 @@ namespace roc {
 namespace audio {
 
 Watchdog::Watchdog(IReader& reader,
+                   const size_t num_channels,
                    const WatchdogConfig& config,
-                   SampleSpec& sample_spec,
+                   size_t sample_rate,
                    core::IAllocator& allocator)
     : reader_(reader)
-    , num_channels_(sample_spec.getNumChannels())
+    , num_channels_(num_channels)
     , max_blank_duration_((packet::timestamp_t)packet::timestamp_from_ns(
-          config.no_playback_timeout, sample_spec.getSampleRate()))
+          config.no_playback_timeout, sample_rate))
     , max_drops_duration_((packet::timestamp_t)packet::timestamp_from_ns(
-          config.broken_playback_timeout, sample_spec.getSampleRate()))
+          config.broken_playback_timeout, sample_rate))
     , drop_detection_window_((packet::timestamp_t)packet::timestamp_from_ns(
-          config.breakage_detection_window, sample_spec.getSampleRate()))
+          config.breakage_detection_window, sample_rate))
     , curr_read_pos_(0)
     , last_pos_before_blank_(0)
     , last_pos_before_drops_(0)
