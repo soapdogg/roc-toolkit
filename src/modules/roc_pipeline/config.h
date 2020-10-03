@@ -126,9 +126,7 @@ struct ReceiverSessionConfig {
     //! Target latency, nanoseconds.
     core::nanoseconds_t target_latency;
 
-    //! Channel mask.
-    packet::channel_mask_t channels;
-
+    //! Sample spec
     audio::SampleSpec sample_spec;
 
     //! Packet payload type.
@@ -154,7 +152,6 @@ struct ReceiverSessionConfig {
 
     ReceiverSessionConfig()
         : target_latency(DefaultLatency)
-        , channels(DefaultChannelMask)
         , sample_spec(DefaultSampleRate, DefaultChannelMask)
         , payload_type(0) {
         latency_monitor.min_latency = target_latency * DefaultMinLatencyFactor;

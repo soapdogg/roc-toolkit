@@ -112,7 +112,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     }
 
     depacketizer_.reset(new (allocator_) audio::Depacketizer(*preader, *payload_decoder_,
-                                                             session_config.channels,
+                                                             session_config.sample_spec.getChannels(),
                                                              common_config.beeping),
                         allocator_);
     if (!depacketizer_) {
@@ -125,7 +125,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
         || session_config.watchdog.broken_playback_timeout != 0
         || session_config.watchdog.frame_status_window != 0) {
         watchdog_.reset(new (allocator_) audio::Watchdog(
-                            *areader, packet::num_channels(session_config.channels),
+                            *areader, session_config.sample_spec.num_channels(),
                             session_config.watchdog, common_config.output_sample_rate,
                             allocator_),
                         allocator_);

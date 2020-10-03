@@ -76,7 +76,7 @@ TEST_GROUP(receiver) {
         config.common.timing = false;
         config.common.poisoning = true;
 
-        config.default_session.channels = ChMask;
+        config.default_session.sample_spec.setChannels(ChMask);
 
         config.default_session.target_latency = Latency * core::Second / SampleRate;
 

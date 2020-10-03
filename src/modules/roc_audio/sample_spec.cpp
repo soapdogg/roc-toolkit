@@ -27,7 +27,7 @@ void SampleSpec::setSampleRate(size_t sample_rate) {
     sample_rate_ = sample_rate;
 }
 
-packet::channel_mask_t SampleSpec::getChannels(){
+packet::channel_mask_t SampleSpec::getChannels() const {
     return channels_;
 }
 

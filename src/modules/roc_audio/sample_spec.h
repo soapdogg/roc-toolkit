@@ -22,7 +22,7 @@ public:
 
     virtual size_t getSampleRate();
     virtual void setSampleRate(size_t sample_rate);
-    virtual packet::channel_mask_t getChannels();
+    virtual packet::channel_mask_t getChannels() const;
     virtual void setChannels(packet::channel_mask_t channels);
     virtual size_t num_channels() const;
 
