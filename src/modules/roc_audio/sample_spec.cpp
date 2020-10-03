@@ -13,6 +13,11 @@
 namespace roc {
 namespace audio {
 
+SampleSpec::SampleSpec() {
+    sample_rate_ = DefaultSampleRate;
+    channels_ = DefaultChannelMask;
+}
+
 SampleSpec::SampleSpec(size_t sample_rate,
                        packet::channel_mask_t channels) {
     sample_rate_ = sample_rate;

@@ -28,12 +28,6 @@
 namespace roc {
 namespace pipeline {
 
-//! Default sample rate, number of samples per second.
-const size_t DefaultSampleRate = 44100;
-
-//! Default channel mask.
-const packet::channel_mask_t DefaultChannelMask = 0x3;
-
 //! Default packet length.
 const core::nanoseconds_t DefaultPacketLength = 7 * core::Millisecond;
 
@@ -101,7 +95,7 @@ struct SenderConfig {
     bool poisoning;
 
     SenderConfig()
-        : input_sample_spec(DefaultSampleRate, DefaultChannelMask)
+        : input_sample_spec()
         , internal_frame_size(DefaultInternalFrameSize)
         , packet_length(DefaultPacketLength)
         , payload_type(rtp::PayloadType_L16_Stereo)
@@ -145,7 +139,7 @@ struct ReceiverSessionConfig {
 
     ReceiverSessionConfig()
         : target_latency(DefaultLatency)
-        , sample_spec(DefaultSampleRate, DefaultChannelMask)
+        , sample_spec()
         , payload_type(0) {
         latency_monitor.min_latency = target_latency * DefaultMinLatencyFactor;
         latency_monitor.max_latency = target_latency * DefaultMaxLatencyFactor;
@@ -175,7 +169,7 @@ struct ReceiverCommonConfig {
     bool beeping;
 
     ReceiverCommonConfig()
-        : output_sample_spec(DefaultSampleRate, DefaultChannelMask)
+        : output_sample_spec()
         , internal_frame_size(DefaultInternalFrameSize)
         , resampling(false)
         , timing(false)
@@ -214,8 +208,8 @@ struct ConverterConfig {
     bool poisoning;
 
     ConverterConfig()
-        : input_sample_spec(DefaultSampleRate, DefaultChannelMask)
-        , output_sample_spec(DefaultSampleRate, DefaultChannelMask)
+        : input_sample_spec()
+        , output_sample_spec()
         , internal_frame_size(DefaultInternalFrameSize)
         , resampling(false)
         , poisoning(false) {

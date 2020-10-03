@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
         sink_config.sample_rate = (size_t)args.rate_arg;
     } else {
         if (!config.common.resampling) {
-            sink_config.sample_rate = pipeline::DefaultSampleRate;
+            sink_config.sample_rate = audio::DefaultSampleRate;
         }
     }
 

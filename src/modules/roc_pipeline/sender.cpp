@@ -120,7 +120,7 @@ Sender::Sender(const SenderConfig& config,
     packetizer_.reset(new (allocator) audio::Packetizer(
                           *pwriter, source_port_->composer(), *payload_encoder_,
                           packet_pool, byte_buffer_pool, config.input_sample_spec.getChannels(),
-                          config.packet_length, format->sample_rate, config.payload_type),
+                          config.packet_length, format->sample_spec.getSampleRate(), config.payload_type),
                       allocator);
     if (!packetizer_) {
         return;
@@ -128,7 +128,7 @@ Sender::Sender(const SenderConfig& config,
 
     audio::IWriter* awriter = packetizer_.get();
 
-    if (config.resampling && config.input_sample_spec.getSampleRate() != format->sample_rate) {
+    if (config.resampling && config.input_sample_spec.getSampleRate() != format->sample_spec.getSampleRate()) {
         if (config.poisoning) {
             resampler_poisoner_.reset(new (allocator) audio::PoisonWriter(*awriter),
                                       allocator);
@@ -145,7 +145,7 @@ Sender::Sender(const SenderConfig& config,
             return;
         }
         if (!resampler_->set_scaling(float(config.input_sample_spec.getSampleRate())
-                                     / format->sample_rate)) {
+                                     / format->sample_spec.getSampleRate())) {
             return;
         }
         awriter = resampler_.get();

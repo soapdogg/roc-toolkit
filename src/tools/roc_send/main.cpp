@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
         source_config.sample_rate = (size_t)args.rate_arg;
     } else {
         if (!config.resampling) {
-            source_config.sample_rate = pipeline::DefaultSampleRate;
+            source_config.sample_rate = audio::DefaultSampleRate;
         }
     }
 

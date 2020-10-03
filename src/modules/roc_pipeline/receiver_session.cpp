@@ -50,7 +50,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
 
     delayed_reader_.reset(
         new (allocator_) packet::DelayedReader(*preader, session_config.target_latency,
-                                               format->sample_rate),
+                                               format->sample_spec.getSampleRate()),
         allocator_);
     if (!delayed_reader_) {
         return;
@@ -58,7 +58,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     preader = delayed_reader_.get();
 
     validator_.reset(new (allocator_) rtp::Validator(
-                         *preader, session_config.rtp_validator, format->sample_rate),
+                         *preader, session_config.rtp_validator, format->sample_spec.getSampleRate()),
                      allocator_);
     if (!validator_) {
         return;
@@ -98,7 +98,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
 
         fec_validator_.reset(new (allocator_)
                                  rtp::Validator(*preader, session_config.rtp_validator,
-                                                format->sample_rate),
+                                                format->sample_spec.getSampleRate()),
                              allocator_);
         if (!fec_validator_) {
             return;
@@ -167,7 +167,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     latency_monitor_.reset(new (allocator_) audio::LatencyMonitor(
                                *source_queue_, *depacketizer_, resampler_.get(),
                                session_config.latency_monitor,
-                               session_config.target_latency, format->sample_rate,
+                               session_config.target_latency, format->sample_spec.getSampleRate(),
                                common_config.output_sample_spec.getSampleRate()),
                            allocator_);
     if (!latency_monitor_ || !latency_monitor_->valid()) {
