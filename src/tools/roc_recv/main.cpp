@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
 
     sndio::Config sink_config;
 
-    sink_config.channels = config.common.output_channels;
+    sink_config.channels = config.common.output_sample_spec.getChannels();
     sink_config.frame_size = config.common.internal_frame_size;
 
     if (args.io_latency_given) {
@@ -230,9 +230,9 @@ int main(int argc, char** argv) {
     }
 
     config.common.timing = !sink->has_clock();
-    config.common.output_sample_rate = sink->sample_rate();
+    config.common.output_sample_spec.setSampleRate(sink->sample_rate());
 
-    if (config.common.output_sample_rate == 0) {
+    if (config.common.output_sample_spec.getSampleRate() == 0) {
         roc_log(LogError,
                 "can't detect output sample rate, try to set it "
                 "explicitly with --rate option");

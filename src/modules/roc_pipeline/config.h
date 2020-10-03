@@ -156,11 +156,8 @@ struct ReceiverSessionConfig {
 //! @remarks
 //!  Defines receiver parameters common for all sessions.
 struct ReceiverCommonConfig {
-    //! Number of samples per second per channel.
-    size_t output_sample_rate;
-
-    //! Channel mask.
-    packet::channel_mask_t output_channels;
+    //! Sample spec
+    audio::SampleSpec output_sample_spec;
 
     //! Number of samples for internal frames.
     size_t internal_frame_size;
@@ -178,8 +175,7 @@ struct ReceiverCommonConfig {
     bool beeping;
 
     ReceiverCommonConfig()
-        : output_sample_rate(DefaultSampleRate)
-        , output_channels(DefaultChannelMask)
+        : output_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , internal_frame_size(DefaultInternalFrameSize)
         , resampling(false)
         , timing(false)

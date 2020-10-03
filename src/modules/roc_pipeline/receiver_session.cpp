@@ -126,7 +126,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
         || session_config.watchdog.frame_status_window != 0) {
         watchdog_.reset(new (allocator_) audio::Watchdog(
                             *areader, session_config.sample_spec.num_channels(),
-                            session_config.watchdog, common_config.output_sample_rate,
+                            session_config.watchdog, common_config.output_sample_spec.getSampleRate(),
                             allocator_),
                         allocator_);
         if (!watchdog_ || !watchdog_->valid()) {
@@ -168,7 +168,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
                                *source_queue_, *depacketizer_, resampler_.get(),
                                session_config.latency_monitor,
                                session_config.target_latency, format->sample_rate,
-                               common_config.output_sample_rate),
+                               common_config.output_sample_spec.getSampleRate()),
                            allocator_);
     if (!latency_monitor_ || !latency_monitor_->valid()) {
         return;

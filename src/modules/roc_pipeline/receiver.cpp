@@ -29,11 +29,11 @@ Receiver::Receiver(const ReceiverConfig& config,
     , byte_buffer_pool_(byte_buffer_pool)
     , sample_buffer_pool_(sample_buffer_pool)
     , allocator_(allocator)
-    , ticker_(config.common.output_sample_rate)
+    , ticker_(config.common.output_sample_spec.getSampleRate())
     , audio_reader_(NULL)
     , config_(config)
     , timestamp_(0)
-    , num_channels_(packet::num_channels(config.common.output_channels))
+    , num_channels_(config.common.output_sample_spec.num_channels())
     , active_cond_(control_mutex_) {
     mixer_.reset(new (allocator_)
                      audio::Mixer(sample_buffer_pool, config.common.internal_frame_size),
@@ -92,7 +92,7 @@ size_t Receiver::num_sessions() const {
 }
 
 size_t Receiver::sample_rate() const {
-    return config_.common.output_sample_rate;
+    return config_.common.output_sample_spec.getSampleRate();
 }
 
 bool Receiver::has_clock() const {

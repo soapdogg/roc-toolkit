@@ -68,8 +68,8 @@ TEST_GROUP(receiver) {
     PortConfig port2;
 
     void setup() {
-        config.common.output_sample_rate = SampleRate;
-        config.common.output_channels = ChMask;
+        config.common.output_sample_spec.setSampleRate(SampleRate);
+        config.common.output_sample_spec.setChannels(ChMask);
         config.common.internal_frame_size = MaxBufSize;
 
         config.common.resampling = false;
