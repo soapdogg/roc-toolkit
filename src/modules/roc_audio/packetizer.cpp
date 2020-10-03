@@ -61,8 +61,9 @@ void Packetizer::write(Frame& frame) {
         if (ns > (samples_per_packet_ - packet_pos_)) {
             ns = (samples_per_packet_ - packet_pos_);
         }
-
-        const size_t actual_ns = payload_encoder_.write(buffer_ptr, ns, channels_);
+        SampleSpec sample_spec = SampleSpec();
+        sample_spec.setChannels(channels_);
+        const size_t actual_ns = payload_encoder_.write(buffer_ptr, ns, sample_spec);
         roc_panic_if_not(actual_ns == ns);
 
         buffer_ptr += actual_ns * num_channels_;

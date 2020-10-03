@@ -43,9 +43,9 @@ size_t pcm_encode_samples(void* out_data,
                           size_t out_offset,
                           const sample_t* in_samples,
                           size_t in_n_samples,
-                          packet::channel_mask_t in_chan_mask) {
+                          SampleSpec& sample_spec) {
     const packet::channel_mask_t out_chan_mask = packet::channel_mask_t(1 << NumCh) - 1;
-    const packet::channel_mask_t inout_chan_mask = in_chan_mask | out_chan_mask;
+    const packet::channel_mask_t inout_chan_mask = sample_spec.getChannels() | out_chan_mask;
 
     size_t len = out_size / NumCh / sizeof(Sample);
     size_t off = out_offset;
@@ -61,7 +61,7 @@ size_t pcm_encode_samples(void* out_data,
 
     for (size_t ns = 0; ns < in_n_samples; ns++) {
         for (packet::channel_mask_t ch = 1; ch <= inout_chan_mask && ch != 0; ch <<= 1) {
-            if (in_chan_mask & ch) {
+            if (sample_spec.getChannels() & ch) {
                 if (out_chan_mask & ch) {
                     *out_samples++ = pcm_encode_one_sample<Sample>(*in_samples);
                 }

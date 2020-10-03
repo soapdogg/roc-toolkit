@@ -32,6 +32,11 @@ packet::channel_mask_t Codec_channels[NumCodecs] = {
     0x3
 };
 
+SampleSpec sample_spec [NumCodecs] = {
+    SampleSpec(0, Codec_channels[0]),
+    SampleSpec(0, Codec_channels[1])
+};
+
 enum { MaxChans = 8, MaxBufSize = 1000 };
 
 const double Epsilon = 0.00001;
@@ -149,7 +154,7 @@ TEST(encoder_decoder, one_frame) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 
@@ -202,7 +207,7 @@ TEST(encoder_decoder, multiple_frames) {
 
             UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                                  encoder->write(encoder_samples, SamplesPerFrame,
-                                                Codec_channels[n_codec]));
+                                                sample_spec[n_codec]));
 
             encoder->end();
 
@@ -263,7 +268,7 @@ TEST(encoder_decoder, incomplete_frames) {
 
             UNSIGNED_LONGS_EQUAL(ActualSamplesPerFrame,
                                  encoder->write(encoder_samples, ActualSamplesPerFrame,
-                                                Codec_channels[n_codec]));
+                                                sample_spec[n_codec]));
 
             encoder->end();
 
@@ -321,7 +326,7 @@ TEST(encoder_decoder, shifted_frames) {
 
             UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                                  encoder->write(encoder_samples, SamplesPerFrame,
-                                                Codec_channels[n_codec]));
+                                                sample_spec[n_codec]));
 
             encoder->end();
 
@@ -384,7 +389,7 @@ TEST(encoder_decoder, skipped_frames) {
 
             UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                                  encoder->write(encoder_samples, SamplesPerFrame,
-                                                Codec_channels[n_codec]));
+                                                sample_spec[n_codec]));
 
             encoder->end();
 
@@ -445,14 +450,14 @@ TEST(encoder_decoder, write_incrementally) {
 
         UNSIGNED_LONGS_EQUAL(
             FirstPart,
-            encoder->write(encoder_samples, FirstPart, Codec_channels[n_codec]));
+            encoder->write(encoder_samples, FirstPart, sample_spec[n_codec]));
 
         UNSIGNED_LONGS_EQUAL(
             SecondPart,
             encoder->write(encoder_samples
                                + FirstPart
-                                   * packet::num_channels(Codec_channels[n_codec]),
-                           SecondPart, Codec_channels[n_codec]));
+                                   * sample_spec[n_codec].num_channels(),
+                           SecondPart, sample_spec[n_codec]));
 
         encoder->end();
 
@@ -493,7 +498,7 @@ TEST(encoder_decoder, write_too_much) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame + 20,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 
@@ -542,8 +547,10 @@ TEST(encoder_decoder, write_channel_mask) {
             encoder_pos =
                 fill_samples(encoder_samples, encoder_pos, FirstPart, FirstPartChans);
 
+            SampleSpec first_part_sample_spec = SampleSpec();
+            first_part_sample_spec.setChannels(FirstPartChans);
             UNSIGNED_LONGS_EQUAL(
-                FirstPart, encoder->write(encoder_samples, FirstPart, FirstPartChans));
+                FirstPart, encoder->write(encoder_samples, FirstPart, first_part_sample_spec));
         }
 
         {
@@ -551,8 +558,10 @@ TEST(encoder_decoder, write_channel_mask) {
             encoder_pos =
                 fill_samples(encoder_samples, encoder_pos, SecondPart, SecondPartChans);
 
+            SampleSpec second_part_sample_spec = SampleSpec();
+            second_part_sample_spec.setChannels(SecondPartChans);
             UNSIGNED_LONGS_EQUAL(
-                SecondPart, encoder->write(encoder_samples, SecondPart, SecondPartChans));
+                SecondPart, encoder->write(encoder_samples, SecondPart, second_part_sample_spec));
         }
 
         encoder->end();
@@ -627,7 +636,7 @@ TEST(encoder_decoder, read_incrementally) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 
@@ -691,7 +700,7 @@ TEST(encoder_decoder, read_too_much) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 
@@ -742,7 +751,7 @@ TEST(encoder_decoder, read_channel_mask) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 
@@ -835,7 +844,7 @@ TEST(encoder_decoder, shift_incrementally) {
 
         UNSIGNED_LONGS_EQUAL(SamplesPerFrame,
                              encoder->write(encoder_samples, SamplesPerFrame,
-                                            Codec_channels[n_codec]));
+                                            sample_spec[n_codec]));
 
         encoder->end();
 

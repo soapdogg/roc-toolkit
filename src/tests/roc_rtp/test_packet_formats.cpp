@@ -8,6 +8,7 @@
 
 #include <CppUTest/TestHarness.h>
 
+#include "roc_audio/sample_spec.h"
 #include "roc_core/buffer_pool.h"
 #include "roc_core/heap_allocator.h"
 #include "roc_core/stddefs.h"
@@ -166,10 +167,12 @@ TEST_GROUP(packet_formats) {
 
         encoder.begin(packet.rtp()->payload.data(), packet.rtp()->payload.size());
 
+        audio::SampleSpec sample_spec = audio::SampleSpec();
+        sample_spec.setChannels(packet::channel_mask_t (1 << pi.num_channels) - 1);
         UNSIGNED_LONGS_EQUAL(
             pi.num_samples,
             encoder.write(samples, pi.num_samples,
-                          packet::channel_mask_t(1 << pi.num_channels) - 1));
+                          sample_spec));
 
         encoder.end();
     }

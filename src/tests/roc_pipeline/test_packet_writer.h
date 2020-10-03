@@ -12,6 +12,7 @@
 #include <CppUTest/TestHarness.h>
 
 #include "roc_audio/iframe_encoder.h"
+#include "roc_audio/sample_spec.h"
 #include "roc_core/buffer_pool.h"
 #include "roc_core/noncopyable.h"
 #include "roc_core/unique_ptr.h"
@@ -55,9 +56,10 @@ public:
                        size_t samples_per_packet,
                        packet::channel_mask_t channels) {
         CHECK(num_packets > 0);
-
+        audio::SampleSpec sample_spec = audio::SampleSpec();
+        sample_spec.setChannels(channels);
         for (size_t np = 0; np < num_packets; np++) {
-            writer_.write(new_packet_(samples_per_packet, channels));
+            writer_.write(new_packet_(samples_per_packet, sample_spec));
         }
     }
 
@@ -102,7 +104,7 @@ private:
     enum { MaxSamples = 4096 };
 
     packet::PacketPtr new_packet_(size_t samples_per_packet,
-                                  packet::channel_mask_t channels) {
+                                  audio::SampleSpec sample_spec) {
         packet::PacketPtr pp = new (packet_pool_) packet::Packet(packet_pool_);
         CHECK(pp);
 
@@ -111,7 +113,7 @@ private:
         pp->udp()->src_addr = src_addr_;
         pp->udp()->dst_addr = dst_addr_;
 
-        pp->set_data(new_buffer_(samples_per_packet, channels));
+        pp->set_data(new_buffer_(samples_per_packet, sample_spec));
 
         if (corrupt_) {
             pp->data().data()[0] = 0;
@@ -121,8 +123,8 @@ private:
     }
 
     core::Slice<uint8_t> new_buffer_(size_t samples_per_packet,
-                                     packet::channel_mask_t channels) {
-        CHECK(samples_per_packet * packet::num_channels(channels) < MaxSamples);
+                                     audio::SampleSpec sample_spec) {
+        CHECK(samples_per_packet * sample_spec.num_channels() < MaxSamples);
 
         packet::PacketPtr pp = new (packet_pool_) packet::Packet(packet_pool_);
         CHECK(pp);
@@ -144,7 +146,7 @@ private:
         timestamp_ += samples_per_packet;
 
         audio::sample_t samples[MaxSamples];
-        for (size_t n = 0; n < samples_per_packet * packet::num_channels(channels); n++) {
+        for (size_t n = 0; n < samples_per_packet * sample_spec.num_channels(); n++) {
             samples[n] = nth_sample(offset_++);
         }
 
@@ -152,7 +154,7 @@ private:
 
         UNSIGNED_LONGS_EQUAL(
             samples_per_packet,
-            payload_encoder_->write(samples, samples_per_packet, channels));
+            payload_encoder_->write(samples, samples_per_packet, sample_spec));
 
         payload_encoder_->end();
 

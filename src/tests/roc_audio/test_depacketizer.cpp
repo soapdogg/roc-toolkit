@@ -62,8 +62,10 @@ TEST_GROUP(depacketizer) {
 
         encoder.begin(pp->rtp()->payload.data(), pp->rtp()->payload.size());
 
+        SampleSpec sample_spec = SampleSpec();
+        sample_spec.setChannels(ChMask);
         UNSIGNED_LONGS_EQUAL(SamplesPerPacket,
-                             encoder.write(samples, SamplesPerPacket, ChMask));
+                             encoder.write(samples, SamplesPerPacket, sample_spec));
 
         encoder.end();
 

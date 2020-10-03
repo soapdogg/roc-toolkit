@@ -12,6 +12,7 @@
 #ifndef ROC_AUDIO_PCM_FUNCS_H_
 #define ROC_AUDIO_PCM_FUNCS_H_
 
+#include "roc_audio/sample_spec.h"
 #include "roc_audio/units.h"
 #include "roc_core/stddefs.h"
 #include "roc_packet/units.h"
@@ -33,7 +34,7 @@ struct PCMFuncs {
                              size_t out_offset,
                              const sample_t* in_samples,
                              size_t in_n_samples,
-                             packet::channel_mask_t in_chan_mask);
+                             SampleSpec& sample_spec);
 
     //! Decode samples.
     size_t (*decode_samples)(const void* in_data,

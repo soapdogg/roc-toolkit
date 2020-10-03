@@ -54,9 +54,11 @@ TEST_GROUP(pcm_funcs) {
                 size_t offset, size_t num_samples, packet::channel_mask_t channels) {
         CHECK(funcs);
 
+        SampleSpec sample_spec = SampleSpec();
+        sample_spec.setChannels(channels);
         UNSIGNED_LONGS_EQUAL(num_samples,
                              funcs->encode_samples(bp.data(), bp.size(), offset, samples,
-                                                   num_samples, channels));
+                                                   num_samples, sample_spec));
     }
 
     void decode(const core::Slice<uint8_t>& bp, size_t offset, size_t num_samples,
@@ -417,12 +419,15 @@ TEST(pcm_funcs, encode_truncate) {
         -0.5f, 0.5f, //
     };
 
-    UNSIGNED_LONGS_EQUAL(
-        NumSamples - Off,
-        funcs->encode_samples(bp.data(), bp.size(), Off, input, NumSamples, 0x3));
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
 
     UNSIGNED_LONGS_EQUAL(
-        0, funcs->encode_samples(bp.data(), bp.size(), 123, input, NumSamples, 0x3));
+        NumSamples - Off,
+        funcs->encode_samples(bp.data(), bp.size(), Off, input, NumSamples, sample_spec));
+
+    UNSIGNED_LONGS_EQUAL(
+        0, funcs->encode_samples(bp.data(), bp.size(), 123, input, NumSamples, sample_spec));
 
     const audio::sample_t output[NumSamples * 2] = {
         0.0f,  0.0f, //
