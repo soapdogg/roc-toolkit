@@ -20,14 +20,13 @@ const core::nanoseconds_t LogInterval = core::Second;
 } // namespace
 
 ProfilingWriter::ProfilingWriter(IWriter& writer,
-                                 packet::channel_mask_t channels,
-                                 size_t sample_rate)
+                                 const SampleSpec& sample_spec)
     : writer_(writer)
     , rate_limiter_(LogInterval)
     , avg_speed_(0)
     , avg_len_(0)
-    , sample_rate_(sample_rate)
-    , num_channels_(packet::num_channels(channels)) {
+    , sample_rate_(sample_spec.getSampleRate())
+    , num_channels_(sample_spec.num_channels()) {
     if (num_channels_ == 0) {
         roc_panic("profiling writer: n_channels is zero");
     }

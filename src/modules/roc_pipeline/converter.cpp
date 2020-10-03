@@ -48,7 +48,7 @@ Converter::Converter(const ConverterConfig& config,
     }
 
     profiler_.reset(new (allocator) audio::ProfilingWriter(
-                        *awriter, config.input_sample_spec.getChannels(), config.input_sample_spec.getSampleRate()),
+                        *awriter, config.input_sample_spec),
                     allocator);
     if (!profiler_) {
         return;

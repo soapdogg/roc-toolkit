@@ -13,6 +13,7 @@
 #define ROC_AUDIO_PROFILING_WRITER_H_
 
 #include "roc_audio/iwriter.h"
+#include "roc_audio/sample_spec.h"
 #include "roc_core/noncopyable.h"
 #include "roc_core/rate_limiter.h"
 #include "roc_core/time.h"
@@ -25,7 +26,7 @@ namespace audio {
 class ProfilingWriter : public IWriter, public core::NonCopyable<> {
 public:
     //! Initialization.
-    ProfilingWriter(IWriter& writer, packet::channel_mask_t channels, size_t sample_rate);
+    ProfilingWriter(IWriter& writer, const SampleSpec& sample_spec);
 
     //! Write audio frame.
     virtual void write(Frame& frame);
