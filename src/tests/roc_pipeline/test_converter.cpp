@@ -40,11 +40,14 @@ TEST_GROUP(converter) {
     ConverterConfig config;
 
     void setup() {
-        config.input_channels = ChMask;
-        config.output_channels = ChMask;
-
-        config.input_sample_rate = SampleRate;
-        config.output_sample_rate = SampleRate;
+        config.input_sample_spec = audio::SampleSpec(
+            SampleRate,
+            ChMask
+        );
+        config.output_sample_spec = audio::SampleSpec(
+            SampleRate,
+            ChMask
+        );
 
         config.internal_frame_size = MaxBufSize;
 

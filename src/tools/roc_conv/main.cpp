@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
                                            args.poisoning_flag);
 
     sndio::Config source_config;
-    source_config.channels = config.input_channels;
+    source_config.channels = config.input_sample_spec.getChannels();
     source_config.sample_rate = 0;
     source_config.frame_size = config.internal_frame_size;
 
@@ -98,12 +98,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    config.input_sample_rate = source->sample_rate();
+    config.input_sample_spec.setSampleRate(source->sample_rate());
 
     if (args.rate_given) {
-        config.output_sample_rate = (size_t)args.rate_arg;
+        config.output_sample_spec.setSampleRate((size_t)args.rate_arg);
     } else {
-        config.output_sample_rate = config.input_sample_rate;
+        config.output_sample_spec.setSampleRate(config.input_sample_spec.getSampleRate());
     }
 
     switch ((unsigned)args.resampler_profile_arg) {
@@ -136,8 +136,8 @@ int main(int argc, char** argv) {
     audio::IWriter* output_writer = NULL;
 
     sndio::Config sink_config;
-    sink_config.channels = config.output_channels;
-    sink_config.sample_rate = config.output_sample_rate;
+    sink_config.channels = config.output_sample_spec.getChannels();
+    sink_config.sample_rate = config.output_sample_spec.getSampleRate();
     sink_config.frame_size = config.internal_frame_size;
 
     core::UniquePtr<sndio::ISink> sink;

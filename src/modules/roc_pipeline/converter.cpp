@@ -40,15 +40,15 @@ Converter::Converter(const ConverterConfig& config,
         if (!resampler_ || !resampler_->valid()) {
             return;
         }
-        if (!resampler_->set_scaling(float(config.input_sample_rate)
-                                     / config.output_sample_rate)) {
+        if (!resampler_->set_scaling(float(config.input_sample_spec.getSampleRate())
+                                     / config.output_sample_spec.getSampleRate())) {
             return;
         }
         awriter = resampler_.get();
     }
 
     profiler_.reset(new (allocator) audio::ProfilingWriter(
-                        *awriter, config.input_channels, config.input_sample_rate),
+                        *awriter, config.input_sample_spec.getChannels(), config.input_sample_spec.getSampleRate()),
                     allocator);
     if (!profiler_) {
         return;
@@ -72,7 +72,7 @@ bool Converter::valid() {
 }
 
 size_t Converter::sample_rate() const {
-    return config_.output_sample_rate;
+    return config_.output_sample_spec.getSampleRate();
 }
 
 bool Converter::has_clock() const {

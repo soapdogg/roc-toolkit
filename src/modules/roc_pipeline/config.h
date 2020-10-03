@@ -198,18 +198,10 @@ struct ConverterConfig {
     //! Resampler parameters.
     audio::ResamplerConfig resampler;
 
-    //! Number of samples per second per channel.
-    size_t input_sample_rate;
+    //! Output sample spec.
+    audio::SampleSpec input_sample_spec;
 
-    //! Number of samples per second per channel.
-    size_t output_sample_rate;
-
-    //! Input channel mask.
-    packet::channel_mask_t input_channels;
-
-    //! Output channel mask.
-    packet::channel_mask_t output_channels;
-
+    //! Output sample spec.
     audio::SampleSpec output_sample_spec;
 
     //! Number of samples for internal frames.
@@ -222,10 +214,7 @@ struct ConverterConfig {
     bool poisoning;
 
     ConverterConfig()
-        : input_sample_rate(DefaultSampleRate)
-        , output_sample_rate(DefaultSampleRate)
-        , input_channels(DefaultChannelMask)
-        , output_channels(DefaultChannelMask)
+        : input_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , output_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , internal_frame_size(DefaultInternalFrameSize)
         , resampling(false)
