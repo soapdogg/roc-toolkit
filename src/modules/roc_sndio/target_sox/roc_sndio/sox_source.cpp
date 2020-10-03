@@ -23,7 +23,7 @@ SoxSource::SoxSource(core::IAllocator& allocator, const Config& config)
     , valid_(false) {
     SoxBackend::instance();
 
-    n_channels_ = packet::num_channels(config.channels);
+    n_channels_ = config.sample_spec.num_channels();
     if (n_channels_ == 0) {
         roc_log(LogError, "sox source: # of channels is zero");
         return;
@@ -40,7 +40,7 @@ SoxSource::SoxSource(core::IAllocator& allocator, const Config& config)
     }
 
     memset(&in_signal_, 0, sizeof(in_signal_));
-    in_signal_.rate = config.sample_rate;
+    in_signal_.rate = config.sample_spec.getSampleRate();
     in_signal_.precision = SOX_SAMPLE_PRECISION;
 
     valid_ = true;

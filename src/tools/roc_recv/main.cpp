@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
 
     sndio::Config sink_config;
 
-    sink_config.channels = config.common.output_sample_spec.getChannels();
+    sink_config.sample_spec.setChannels(config.common.output_sample_spec.getChannels());
     sink_config.frame_size = config.common.internal_frame_size;
 
     if (args.io_latency_given) {
@@ -203,10 +203,10 @@ int main(int argc, char** argv) {
             roc_log(LogError, "invalid --rate: should be > 0");
             return 1;
         }
-        sink_config.sample_rate = (size_t)args.rate_arg;
+        sink_config.sample_spec.setSampleRate((size_t)args.rate_arg);
     } else {
         if (!config.common.resampling) {
-            sink_config.sample_rate = audio::DefaultSampleRate;
+            sink_config.sample_spec.setSampleRate(audio::DefaultSampleRate);
         }
     }
 

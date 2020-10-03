@@ -7,6 +7,7 @@
  */
 
 #include "roc_audio/resampler_profile.h"
+#include "roc_audio/sample_spec.h"
 #include "roc_core/colors.h"
 #include "roc_core/crash.h"
 #include "roc_core/heap_allocator.h"
@@ -81,8 +82,7 @@ int main(int argc, char** argv) {
                                            args.poisoning_flag);
 
     sndio::Config source_config;
-    source_config.channels = config.input_sample_spec.getChannels();
-    source_config.sample_rate = 0;
+    source_config.sample_spec = audio::SampleSpec(0, config.input_sample_spec.getChannels());
     source_config.frame_size = config.internal_frame_size;
 
     core::UniquePtr<sndio::ISource> source(
@@ -136,8 +136,7 @@ int main(int argc, char** argv) {
     audio::IWriter* output_writer = NULL;
 
     sndio::Config sink_config;
-    sink_config.channels = config.output_sample_spec.getChannels();
-    sink_config.sample_rate = config.output_sample_spec.getSampleRate();
+    sink_config.sample_spec = config.output_sample_spec;
     sink_config.frame_size = config.internal_frame_size;
 
     core::UniquePtr<sndio::ISink> sink;

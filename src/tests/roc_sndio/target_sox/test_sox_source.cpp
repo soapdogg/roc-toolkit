@@ -10,6 +10,7 @@
 
 #include "test_mock_source.h"
 
+#include "roc_audio/sample_spec.h"
 #include "roc_core/buffer_pool.h"
 #include "roc_core/heap_allocator.h"
 #include "roc_core/stddefs.h"
@@ -35,12 +36,10 @@ TEST_GROUP(sox_source) {
     Config source_config;
 
     void setup() {
-        sink_config.channels = ChMask;
-        sink_config.sample_rate = SampleRate;
+        sink_config.sample_spec = audio::SampleSpec(SampleRate, ChMask);
         sink_config.frame_size = FrameSize;
 
-        source_config.channels = ChMask;
-        source_config.sample_rate = SampleRate;
+        source_config.sample_spec = audio::SampleSpec(SampleRate, ChMask);
         source_config.frame_size = FrameSize;
     }
 };
@@ -91,7 +90,7 @@ TEST(sox_source, sample_rate_auto) {
         CHECK(pump.run());
     }
 
-    source_config.sample_rate = 0;
+    source_config.sample_spec.setSampleRate(0);
     SoxSource sox_source(allocator, source_config);
 
     CHECK(sox_source.open(NULL, file.path()));
@@ -113,7 +112,7 @@ TEST(sox_source, sample_rate_mismatch) {
         CHECK(pump.run());
     }
 
-    source_config.sample_rate = SampleRate * 2;
+    source_config.sample_spec.setSampleRate(SampleRate * 2);
     SoxSource sox_source(allocator, source_config);
 
     CHECK(sox_source.open(NULL, file.path()));

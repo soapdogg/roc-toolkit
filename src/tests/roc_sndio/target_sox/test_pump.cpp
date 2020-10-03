@@ -11,6 +11,7 @@
 #include "test_mock_sink.h"
 #include "test_mock_source.h"
 
+#include "roc_audio/sample_spec.h"
 #include "roc_core/buffer_pool.h"
 #include "roc_core/heap_allocator.h"
 #include "roc_core/stddefs.h"
@@ -35,8 +36,7 @@ TEST_GROUP(pump) {
     Config config;
 
     void setup() {
-        config.channels = ChMask;
-        config.sample_rate = SampleRate;
+        config.sample_spec = audio::SampleSpec(SampleRate, ChMask);
         config.frame_size = FrameSize;
     }
 };

@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
     }
 
     sndio::Config source_config;
-    source_config.channels = config.input_sample_spec.getChannels();
+    source_config.sample_spec.setChannels(config.input_sample_spec.getChannels());
     source_config.frame_size = config.internal_frame_size;
 
     if (args.rate_given) {
@@ -186,10 +186,10 @@ int main(int argc, char** argv) {
             roc_log(LogError, "invalid --rate: should be > 0");
             return 1;
         }
-        source_config.sample_rate = (size_t)args.rate_arg;
+        source_config.sample_spec.setSampleRate((size_t)args.rate_arg);
     } else {
         if (!config.resampling) {
-            source_config.sample_rate = audio::DefaultSampleRate;
+            source_config.sample_spec.setSampleRate(audio::DefaultSampleRate);
         }
     }
 
