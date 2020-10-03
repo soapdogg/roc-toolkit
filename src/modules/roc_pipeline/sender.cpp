@@ -29,7 +29,7 @@ Sender::Sender(const SenderConfig& config,
     : audio_writer_(NULL)
     , config_(config)
     , timestamp_(0)
-    , num_channels_(packet::num_channels(config.input_channels)) {
+    , num_channels_(config.input_sample_spec.num_channels()) {
     roc_log(LogInfo, "sender: using remote source port %s",
             port_to_str(source_port_config).c_str());
     roc_log(LogInfo, "sender: using remote repair port %s",
@@ -46,7 +46,7 @@ Sender::Sender(const SenderConfig& config,
     }
 
     if (config.timing) {
-        ticker_.reset(new (allocator) core::Ticker(config.input_sample_rate), allocator);
+        ticker_.reset(new (allocator) core::Ticker(config.input_sample_spec.getSampleRate()), allocator);
         if (!ticker_) {
             return;
         }
@@ -119,7 +119,7 @@ Sender::Sender(const SenderConfig& config,
 
     packetizer_.reset(new (allocator) audio::Packetizer(
                           *pwriter, source_port_->composer(), *payload_encoder_,
-                          packet_pool, byte_buffer_pool, config.input_channels,
+                          packet_pool, byte_buffer_pool, config.input_sample_spec.getChannels(),
                           config.packet_length, format->sample_rate, config.payload_type),
                       allocator);
     if (!packetizer_) {
@@ -128,7 +128,7 @@ Sender::Sender(const SenderConfig& config,
 
     audio::IWriter* awriter = packetizer_.get();
 
-    if (config.resampling && config.input_sample_rate != format->sample_rate) {
+    if (config.resampling && config.input_sample_spec.getSampleRate() != format->sample_rate) {
         if (config.poisoning) {
             resampler_poisoner_.reset(new (allocator) audio::PoisonWriter(*awriter),
                                       allocator);
@@ -144,7 +144,7 @@ Sender::Sender(const SenderConfig& config,
         if (!resampler_ || !resampler_->valid()) {
             return;
         }
-        if (!resampler_->set_scaling(float(config.input_sample_rate)
+        if (!resampler_->set_scaling(float(config.input_sample_spec.getSampleRate())
                                      / format->sample_rate)) {
             return;
         }
@@ -168,7 +168,7 @@ bool Sender::valid() {
 }
 
 size_t Sender::sample_rate() const {
-    return config_.input_sample_rate;
+    return config_.input_sample_spec.getSampleRate();
 }
 
 bool Sender::has_clock() const {

@@ -20,7 +20,7 @@ class SampleSpec {
 public:
     SampleSpec(size_t sample_rate, packet::channel_mask_t channels);
 
-    virtual size_t getSampleRate();
+    virtual size_t getSampleRate() const;
     virtual void setSampleRate(size_t sample_rate);
     virtual packet::channel_mask_t getChannels() const;
     virtual void setChannels(packet::channel_mask_t channels);

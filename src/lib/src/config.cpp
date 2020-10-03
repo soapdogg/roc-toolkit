@@ -32,7 +32,7 @@ bool make_context_config(roc_context_config& out, const roc_context_config& in) 
 
 bool make_sender_config(pipeline::SenderConfig& out, const roc_sender_config& in) {
     if (in.frame_sample_rate != 0) {
-        out.input_sample_rate = in.frame_sample_rate;
+        out.input_sample_spec.setSampleRate(in.frame_sample_rate);
     } else {
         roc_log(LogError, "roc_config: invalid frame_sample_rate");
         return false;

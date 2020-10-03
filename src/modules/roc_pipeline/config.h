@@ -76,12 +76,7 @@ struct SenderConfig {
     //! FEC encoder parameters.
     fec::CodecConfig fec_encoder;
 
-    //! Number of samples per second per channel.
-    size_t input_sample_rate;
-
-    //! Channel mask.
-    packet::channel_mask_t input_channels;
-
+    //! Sample spec
     audio::SampleSpec input_sample_spec;
 
     //! Number of samples for internal frames.
@@ -106,9 +101,7 @@ struct SenderConfig {
     bool poisoning;
 
     SenderConfig()
-        : input_sample_rate(DefaultSampleRate)
-        , input_channels(DefaultChannelMask)
-        , input_sample_spec(DefaultSampleRate, DefaultChannelMask)
+        : input_sample_spec(DefaultSampleRate, DefaultChannelMask)
         , internal_frame_size(DefaultInternalFrameSize)
         , packet_length(DefaultPacketLength)
         , payload_type(rtp::PayloadType_L16_Stereo)

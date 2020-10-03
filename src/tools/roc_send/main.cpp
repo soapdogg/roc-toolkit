@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
     }
 
     sndio::Config source_config;
-    source_config.channels = config.input_channels;
+    source_config.channels = config.input_sample_spec.getChannels();
     source_config.frame_size = config.internal_frame_size;
 
     if (args.rate_given) {
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
     }
 
     config.timing = !source->has_clock();
-    config.input_sample_rate = source->sample_rate();
+    config.input_sample_spec.setSampleRate(source->sample_rate());
 
     fec::CodecMap codec_map;
     rtp::FormatMap format_map;

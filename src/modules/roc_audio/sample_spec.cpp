@@ -19,7 +19,7 @@ SampleSpec::SampleSpec(size_t sample_rate,
     channels_ = channels;
 }
 
-size_t SampleSpec::getSampleRate(){
+size_t SampleSpec::getSampleRate() const {
     return sample_rate_;
 }
 
