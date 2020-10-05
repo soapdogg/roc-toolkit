@@ -28,8 +28,7 @@ Packetizer::Packetizer(packet::IWriter& writer,
     , packet_pool_(packet_pool)
     , buffer_pool_(buffer_pool)
     , sample_spec_(sample_spec)
-    , samples_per_packet_(
-          (packet::timestamp_t)packet::timestamp_from_ns(packet_length, sample_spec.getSampleRate()))
+    , samples_per_packet_((packet::timestamp_t)sample_spec_.timestamp_from_ns(packet_length))
     , payload_type_(payload_type)
     , payload_size_(payload_encoder.encoded_size(samples_per_packet_))
     , packet_pos_(0)

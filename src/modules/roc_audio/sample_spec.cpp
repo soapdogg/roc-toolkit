@@ -47,6 +47,10 @@ size_t SampleSpec::num_channels() const {
     return num_channels_;
 }
 
+packet::timestamp_diff_t SampleSpec::timestamp_from_ns(core::nanoseconds_t ns) const {
+    return packet::timestamp_diff_t(roundf(float(ns) / core::Second * sample_rate_));
+}
+
 size_t SampleSpec::calc_num_channels() {
     size_t n_ch = 0;
     packet::channel_mask_t ch_mask = channels_;

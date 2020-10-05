@@ -24,29 +24,26 @@ LatencyMonitor::LatencyMonitor(const packet::SortedQueue& queue,
                                ResamplerReader* resampler,
                                const LatencyMonitorConfig& config,
                                core::nanoseconds_t target_latency,
-                               size_t input_sample_rate,
-                               size_t output_sample_rate)
+                               const SampleSpec& input_sample_spec,
+                               const SampleSpec& output_sample_spec)
     : queue_(queue)
     , depacketizer_(depacketizer)
     , resampler_(resampler)
-    , fe_((packet::timestamp_t)packet::timestamp_from_ns(target_latency,
-                                                         input_sample_rate))
+    , fe_((packet::timestamp_t) input_sample_spec.timestamp_from_ns(target_latency))
     , rate_limiter_(LogInterval)
-    , update_interval_((packet::timestamp_t)packet::timestamp_from_ns(
-          config.fe_update_interval, input_sample_rate))
+    , update_interval_((packet::timestamp_t) input_sample_spec.timestamp_from_ns(config.fe_update_interval))
     , update_pos_(0)
     , has_update_pos_(false)
-    , target_latency_((packet::timestamp_t)packet::timestamp_from_ns(target_latency,
-                                                                     input_sample_rate))
-    , min_latency_(packet::timestamp_from_ns(config.min_latency, input_sample_rate))
-    , max_latency_(packet::timestamp_from_ns(config.max_latency, input_sample_rate))
+    , target_latency_((packet::timestamp_t)input_sample_spec.timestamp_from_ns(target_latency))
+    , min_latency_(input_sample_spec.timestamp_from_ns(config.min_latency))
+    , max_latency_(input_sample_spec.timestamp_from_ns(config.max_latency))
     , max_scaling_delta_(config.max_scaling_delta)
     , sample_rate_coeff_(0.f)
     , valid_(false) {
     roc_log(LogDebug,
             "latency monitor: initializing: target_latency=%lu in_rate=%lu out_rate=%lu",
-            (unsigned long)target_latency_, (unsigned long)input_sample_rate,
-            (unsigned long)output_sample_rate);
+            (unsigned long)target_latency_, (unsigned long)input_sample_spec.getSampleRate(),
+            (unsigned long)output_sample_spec.getSampleRate());
 
     if (config.fe_update_interval <= 0) {
         roc_log(LogError, "latency monitor: invalid config: fe_update_interval=%ld",
@@ -64,15 +61,15 @@ LatencyMonitor::LatencyMonitor(const packet::SortedQueue& queue,
     }
 
     if (resampler_) {
-        if (!init_resampler_(input_sample_rate, output_sample_rate)) {
+        if (!init_resampler_(input_sample_spec.getSampleRate(), output_sample_spec.getSampleRate())) {
             return;
         }
     } else {
-        if (input_sample_rate != output_sample_rate) {
+        if (input_sample_spec.getSampleRate() != output_sample_spec.getSampleRate()) {
             roc_log(LogError,
                     "latency monitor: input and output sample rates must be equal"
                     " when resampling is disabled: in_rate=%lu, out_rate=%lu",
-                    (unsigned long)input_sample_rate, (unsigned long)output_sample_rate);
+                    (unsigned long)input_sample_spec.getSampleRate(), (unsigned long)output_sample_spec.getSampleRate());
             return;
         }
     }

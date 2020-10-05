@@ -50,7 +50,7 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
 
     delayed_reader_.reset(
         new (allocator_) packet::DelayedReader(*preader, session_config.target_latency,
-                                               format->sample_spec.getSampleRate()),
+                                               format->sample_spec),
         allocator_);
     if (!delayed_reader_) {
         return;
@@ -170,8 +170,8 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     latency_monitor_.reset(new (allocator_) audio::LatencyMonitor(
                                *source_queue_, *depacketizer_, resampler_.get(),
                                session_config.latency_monitor,
-                               session_config.target_latency, format->sample_spec.getSampleRate(),
-                               common_config.output_sample_spec.getSampleRate()),
+                               session_config.target_latency, format->sample_spec,
+                               common_config.output_sample_spec),
                            allocator_);
     if (!latency_monitor_ || !latency_monitor_->valid()) {
         return;

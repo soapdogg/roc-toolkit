@@ -73,8 +73,8 @@ public:
                    ResamplerReader* resampler,
                    const LatencyMonitorConfig& config,
                    core::nanoseconds_t target_latency,
-                   size_t input_sample_rate,
-                   size_t output_sample_rate);
+                   const SampleSpec& input_sample_spec,
+                   const SampleSpec& output_sample_spec);
 
     //! Check if the object was initialized successfully.
     bool valid() const;

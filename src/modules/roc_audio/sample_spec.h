@@ -32,6 +32,7 @@ public:
     virtual packet::channel_mask_t getChannels() const;
     virtual void setChannels(packet::channel_mask_t channels);
     virtual size_t num_channels() const;
+    virtual packet::timestamp_diff_t timestamp_from_ns(core::nanoseconds_t ns) const;
 
 private:
     size_t sample_rate_;
