@@ -89,8 +89,7 @@ private:
     bool stop_timer_();
 
     const char* device_;
-    size_t sample_rate_;
-    const size_t num_channels_;
+    SampleSpec& sample_spec_;
     const size_t frame_size_;
 
     core::nanoseconds_t latency_;

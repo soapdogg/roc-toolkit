@@ -14,6 +14,7 @@
 
 #include "roc_audio/iframe_decoder.h"
 #include "roc_audio/ireader.h"
+#include "roc_audio/sample_spec.h"
 #include "roc_audio/units.h"
 #include "roc_core/noncopyable.h"
 #include "roc_core/rate_limiter.h"
@@ -37,7 +38,7 @@ public:
     //!  - @p beep enables weird beeps instead of silence on packet loss
     Depacketizer(packet::IReader& reader,
                  IFrameDecoder& payload_decoder,
-                 packet::channel_mask_t channels,
+                 SampleSpec& sample_spec,
                  bool beep);
 
     //! Read audio frame.

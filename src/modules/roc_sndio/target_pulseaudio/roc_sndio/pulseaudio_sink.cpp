@@ -30,8 +30,7 @@ const core::nanoseconds_t MaxTimeout = core::Second * 2;
 
 PulseaudioSink::PulseaudioSink(const Config& config)
     : device_(NULL)
-    , sample_rate_(config.sample_rate)
-    , num_channels_(packet::num_channels(config.channels))
+    , sample_spec_(config.sample_spec)
     , frame_size_(config.frame_size)
     , open_done_(false)
     , opened_(false)

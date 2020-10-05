@@ -32,12 +32,12 @@ inline void write_beep(sample_t* buf, size_t bufsz) {
 
 Depacketizer::Depacketizer(packet::IReader& reader,
                            IFrameDecoder& payload_decoder,
-                           packet::channel_mask_t channels,
+                           SampleSpec& sample_spec,
                            bool beep)
     : reader_(reader)
     , payload_decoder_(payload_decoder)
-    , channels_(channels)
-    , num_channels_(packet::num_channels(channels))
+    , channels_(sample_spec.getChannels())
+    , num_channels_(sample_spec.num_channels())
     , timestamp_(0)
     , zero_samples_(0)
     , missing_samples_(0)
