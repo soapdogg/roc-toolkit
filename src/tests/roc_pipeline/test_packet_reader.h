@@ -93,7 +93,7 @@ private:
         audio::sample_t samples[MaxSamples] = {};
         UNSIGNED_LONGS_EQUAL(
             samples_per_packet,
-            payload_decoder_->read(samples, samples_per_packet, sample_spec.getChannels()));
+            payload_decoder_->read(samples, samples_per_packet, sample_spec));
 
         payload_decoder_->end();
 

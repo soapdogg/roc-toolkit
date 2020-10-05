@@ -42,7 +42,7 @@ struct PCMFuncs {
                              size_t in_offset,
                              sample_t* out_samples,
                              size_t out_n_samples,
-                             packet::channel_mask_t out_chan_mask);
+                             SampleSpec& sample_spec);
 };
 
 //! PCM functions for 16-bit 1-channel audio.

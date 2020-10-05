@@ -129,11 +129,14 @@ TEST_GROUP(packet_formats) {
 
         decoder.begin(packet.rtp()->timestamp, packet.rtp()->payload.data(),
                       packet.rtp()->payload.size());
-
+        
+        packet::channel_mask_t channels = (1 << pi.num_channels) - 1;
+        audio::SampleSpec sample_spec = audio::SampleSpec();
+        sample_spec.setChannels(channels);
         UNSIGNED_LONGS_EQUAL(
             pi.num_samples,
-            decoder.read(samples, pi.num_samples,
-                         packet::channel_mask_t(1 << pi.num_channels) - 1));
+            decoder.read(samples, pi.num_samples, sample_spec)
+        );
 
         decoder.end();
 

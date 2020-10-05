@@ -96,7 +96,7 @@ public:
         sample_t samples[400] = {};
 
         UNSIGNED_LONGS_EQUAL(n_samples,
-                             payload_decoder_.read(samples, SamplesPerPacket, ChMask));
+                             payload_decoder_.read(samples, SamplesPerPacket, sample_spec));
 
         payload_decoder_.end();
 

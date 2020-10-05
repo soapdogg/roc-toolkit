@@ -70,8 +70,7 @@ private:
     packet::IReader& reader_;
     IFrameDecoder& payload_decoder_;
 
-    const packet::channel_mask_t channels_;
-    const size_t num_channels_;
+    SampleSpec sample_spec_;
 
     packet::PacketPtr packet_;
 

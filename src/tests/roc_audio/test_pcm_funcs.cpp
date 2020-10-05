@@ -51,18 +51,16 @@ TEST_GROUP(pcm_funcs) {
     }
 
     void encode(const core::Slice<uint8_t>& bp, const audio::sample_t* samples,
-                size_t offset, size_t num_samples, packet::channel_mask_t channels) {
+                size_t offset, size_t num_samples, SampleSpec sample_spec) {
         CHECK(funcs);
 
-        SampleSpec sample_spec = SampleSpec();
-        sample_spec.setChannels(channels);
         UNSIGNED_LONGS_EQUAL(num_samples,
                              funcs->encode_samples(bp.data(), bp.size(), offset, samples,
                                                    num_samples, sample_spec));
     }
 
     void decode(const core::Slice<uint8_t>& bp, size_t offset, size_t num_samples,
-                packet::channel_mask_t channels) {
+                SampleSpec sample_spec) {
         CHECK(funcs);
 
         for (size_t i = 0; i < MaxSamples; i++) {
@@ -71,7 +69,7 @@ TEST_GROUP(pcm_funcs) {
 
         UNSIGNED_LONGS_EQUAL(num_samples,
                              funcs->decode_samples(bp.data(), bp.size(), offset, output,
-                                                   num_samples, channels));
+                                                   num_samples, sample_spec));
     }
 
     void check(const audio::sample_t* samples, size_t num_samples,
@@ -121,11 +119,11 @@ TEST(pcm_funcs, encode_decode_1ch) {
         0.5f, //
     };
 
-    encode(bp, samples, 0, NumSamples, 0x1);
-    decode(bp, 0, NumSamples, 0x1);
-
     SampleSpec sample_spec = SampleSpec();
     sample_spec.setChannels(0x1);
+    encode(bp, samples, 0, NumSamples, sample_spec);
+    decode(bp, 0, NumSamples, sample_spec);
+
     check(samples, NumSamples, sample_spec);
 }
 
@@ -144,11 +142,11 @@ TEST(pcm_funcs, encode_decode_2ch) {
         -0.5f, 0.5f, //
     };
 
-    encode(bp, samples, 0, NumSamples, 0x3);
-    decode(bp, 0, NumSamples, 0x3);
-
     SampleSpec sample_spec = SampleSpec();
     sample_spec.setChannels(0x3);
+    encode(bp, samples, 0, NumSamples, sample_spec);
+    decode(bp, 0, NumSamples, sample_spec);
+
     check(samples, NumSamples, sample_spec);
 }
 
@@ -167,8 +165,12 @@ TEST(pcm_funcs, encode_mask_subset) {
         0.5f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x2);
-    decode(bp, 0, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x2);
+    encode(bp, input, 0, NumSamples, sample_spec);
+
+    sample_spec.setChannels(0x3);
+    decode(bp, 0, NumSamples, sample_spec);
 
     const audio::sample_t output[NumSamples * 2] = {
         0.0f, 0.1f, //
@@ -178,8 +180,6 @@ TEST(pcm_funcs, encode_mask_subset) {
         0.0f, 0.5f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x3);
     check(output, NumSamples, sample_spec);
 }
 
@@ -198,8 +198,12 @@ TEST(pcm_funcs, encode_mask_superset) {
         -0.5f, 0.5f, 0.8f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x7);
-    decode(bp, 0, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x7);
+    encode(bp, input, 0, NumSamples, sample_spec);
+
+    sample_spec.setChannels(0x3);
+    decode(bp, 0, NumSamples, sample_spec);;
 
     const audio::sample_t output[NumSamples * 2] = {
         -0.1f, 0.1f, //
@@ -209,8 +213,6 @@ TEST(pcm_funcs, encode_mask_superset) {
         -0.5f, 0.5f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x3);
     check(output, NumSamples, sample_spec);
 }
 
@@ -229,8 +231,12 @@ TEST(pcm_funcs, encode_mask_overlap) {
         -0.5f, 0.8f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x5);
-    decode(bp, 0, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x5);
+    encode(bp, input, 0, NumSamples, sample_spec);
+
+    sample_spec.setChannels(0x3); 
+    decode(bp, 0, NumSamples, sample_spec);
 
     const audio::sample_t output[NumSamples * 2] = {
         -0.1f, 0.0f, //
@@ -240,8 +246,6 @@ TEST(pcm_funcs, encode_mask_overlap) {
         -0.5f, 0.0f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x3);
     check(output, NumSamples, sample_spec);
 }
 
@@ -260,8 +264,12 @@ TEST(pcm_funcs, decode_mask_subset) {
         -0.5f, 0.5f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x3);
-    decode(bp, 0, NumSamples, 0x2);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input, 0, NumSamples, sample_spec);
+
+    sample_spec.setChannels(0x2);
+    decode(bp, 0, NumSamples, sample_spec);
 
     const audio::sample_t output[NumSamples] = {
         0.1f, //
@@ -271,8 +279,6 @@ TEST(pcm_funcs, decode_mask_subset) {
         0.5f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x2);
     check(output, NumSamples, sample_spec);
 }
 
@@ -291,8 +297,12 @@ TEST(pcm_funcs, decode_mask_superset) {
         -0.5f, 0.5f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x3);
-    decode(bp, 0, NumSamples, 0x7);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input, 0, NumSamples, sample_spec);
+    
+    sample_spec.setChannels(0x7);
+    decode(bp, 0, NumSamples, sample_spec);
 
     const audio::sample_t output[NumSamples * 3] = {
         -0.1f, 0.1f, 0.0f, //
@@ -302,8 +312,6 @@ TEST(pcm_funcs, decode_mask_superset) {
         -0.5f, 0.5f, 0.0f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x7);
     check(output, NumSamples, sample_spec);
 }
 
@@ -322,8 +330,12 @@ TEST(pcm_funcs, decode_mask_overlap) {
         -0.5f, 0.5f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x3);
-    decode(bp, 0, NumSamples, 0x6);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input, 0, NumSamples, sample_spec);
+
+    sample_spec.setChannels(0x6); 
+    decode(bp, 0, NumSamples, sample_spec);
 
     const audio::sample_t output[NumSamples * 2] = {
         0.1f, 0.0f, //
@@ -333,8 +345,6 @@ TEST(pcm_funcs, decode_mask_overlap) {
         0.5f, 0.0f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x6);
     check(output, NumSamples, sample_spec);
 }
 
@@ -350,15 +360,18 @@ TEST(pcm_funcs, encode_incremental) {
         -0.4f, 0.4f, //
         -0.5f, 0.5f, //
     };
-
-    encode(bp, input1, Off, NumSamples - Off, 0x3);
+ 
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input1, Off, NumSamples - Off, sample_spec);
 
     const audio::sample_t input2[Off] = {
         -0.1f, //
         -0.2f, //
     };
 
-    encode(bp, input2, 0, Off, 0x1);
+    sample_spec.setChannels(0x1);
+    encode(bp, input2, 0, Off, sample_spec);
 
     const audio::sample_t output[NumSamples * 2] = {
         -0.1f, 0.0f, //
@@ -368,10 +381,9 @@ TEST(pcm_funcs, encode_incremental) {
         -0.5f, 0.5f, //
     };
 
-    decode(bp, 0, NumSamples, 0x3);
-
-    SampleSpec sample_spec = SampleSpec();
     sample_spec.setChannels(0x3);
+    decode(bp, 0, NumSamples, sample_spec);
+
     check(output, NumSamples, sample_spec);
 }
 
@@ -389,21 +401,22 @@ TEST(pcm_funcs, decode_incremenal) {
         -0.4f, 0.4f, //
         -0.5f, 0.5f, //
     };
+ 
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input, 0, NumSamples, sample_spec);
 
-    encode(bp, input, 0, NumSamples, 0x3);
-
-    decode(bp, 0, Off, 0x3);
+    decode(bp, 0, Off, sample_spec);
 
     const audio::sample_t output1[NumSamples * 2] = {
         -0.1f, 0.1f, //
         -0.2f, 0.2f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x3);
     check(output1, Off, sample_spec);
 
-    decode(bp, Off, NumSamples - Off, 0x1);
+    sample_spec.setChannels(0x1);
+    decode(bp, Off, NumSamples - Off, sample_spec);
 
     const audio::sample_t output2[NumSamples] = {
         -0.3f, //
@@ -411,11 +424,10 @@ TEST(pcm_funcs, decode_incremenal) {
         -0.5f, //
     };
 
-    
-    sample_spec.setChannels(0x1);
     check(output2, NumSamples - Off, sample_spec);
 
-    decode(bp, Off, NumSamples - Off, 0x2);
+    sample_spec.setChannels(0x2);
+    decode(bp, Off, NumSamples - Off, sample_spec);
 
     const audio::sample_t output3[NumSamples] = {
         0.3f, //
@@ -423,8 +435,6 @@ TEST(pcm_funcs, decode_incremenal) {
         0.5f, //
     };
 
-    
-    sample_spec.setChannels(0x2);
     check(output3, NumSamples - Off, sample_spec);
 }
 
@@ -461,7 +471,7 @@ TEST(pcm_funcs, encode_truncate) {
         -0.3f, 0.3f, //
     };
 
-    decode(bp, 0, NumSamples, 0x3);
+    decode(bp, 0, NumSamples, sample_spec);
 
     check(output, NumSamples, sample_spec);
 }
@@ -481,14 +491,16 @@ TEST(pcm_funcs, decode_truncate) {
         -0.5f, 0.5f, //
     };
 
-    encode(bp, input, 0, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    encode(bp, input, 0, NumSamples, sample_spec);
 
     UNSIGNED_LONGS_EQUAL(
         NumSamples - Off,
-        funcs->decode_samples(bp.data(), bp.size(), Off, output, NumSamples, 0x3));
+        funcs->decode_samples(bp.data(), bp.size(), Off, output, NumSamples, sample_spec));
 
     UNSIGNED_LONGS_EQUAL(
-        0, funcs->decode_samples(bp.data(), bp.size(), 123, output, NumSamples, 0x3));
+        0, funcs->decode_samples(bp.data(), bp.size(), 123, output, NumSamples, sample_spec));
 
     const audio::sample_t output[NumSamples * 2] = {
         -0.3f, 0.3f, //
@@ -498,8 +510,7 @@ TEST(pcm_funcs, decode_truncate) {
         0.0f,  0.0f, //
     };
 
-    SampleSpec sample_spec = SampleSpec();
-    sample_spec.setChannels(0x3);
+
     check(output, NumSamples, sample_spec);
 }
 
