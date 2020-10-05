@@ -117,10 +117,12 @@ Sender::Sender(const SenderConfig& config,
         return;
     }
 
+    audio::SampleSpec sample_spec = audio::SampleSpec(format->sample_spec.getSampleRate(),
+                                                      config.input_sample_spec.getChannels());
     packetizer_.reset(new (allocator) audio::Packetizer(
                           *pwriter, source_port_->composer(), *payload_encoder_,
-                          packet_pool, byte_buffer_pool, config.input_sample_spec.getChannels(),
-                          config.packet_length, format->sample_spec.getSampleRate(), config.payload_type),
+                          packet_pool, byte_buffer_pool,
+                          config.packet_length, sample_spec, config.payload_type),
                       allocator);
     if (!packetizer_) {
         return;

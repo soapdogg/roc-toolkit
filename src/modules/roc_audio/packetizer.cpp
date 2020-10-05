@@ -19,19 +19,18 @@ Packetizer::Packetizer(packet::IWriter& writer,
                        IFrameEncoder& payload_encoder,
                        packet::PacketPool& packet_pool,
                        core::BufferPool<uint8_t>& buffer_pool,
-                       packet::channel_mask_t channels,
                        core::nanoseconds_t packet_length,
-                       size_t sample_rate,
+                       SampleSpec& sample_spec,
                        unsigned int payload_type)
     : writer_(writer)
     , composer_(composer)
     , payload_encoder_(payload_encoder)
     , packet_pool_(packet_pool)
     , buffer_pool_(buffer_pool)
-    , channels_(channels)
-    , num_channels_(packet::num_channels(channels))
+    , channels_(sample_spec.getChannels())
+    , num_channels_(sample_spec.num_channels())
     , samples_per_packet_(
-          (packet::timestamp_t)packet::timestamp_from_ns(packet_length, sample_rate))
+          (packet::timestamp_t)packet::timestamp_from_ns(packet_length, sample_spec.getSampleRate()))
     , payload_type_(payload_type)
     , payload_size_(payload_encoder.encoded_size(samples_per_packet_))
     , packet_pos_(0)
