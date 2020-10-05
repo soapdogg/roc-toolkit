@@ -614,7 +614,8 @@ TEST(receiver, seqnum_reorder) {
                                byte_buffer_pool, PayloadType, src1, port1.address);
 
     size_t pos = 0;
-
+    audio::SampleSpec sample_spec = audio::SampleSpec();
+    sample_spec.setChannels(ChMask);
     for (size_t ni = 0; ni < ManyPackets / ReorderWindow; ni++) {
         if (pos >= Latency / SamplesPerPacket) {
             for (size_t nf = 0; nf < ReorderWindow * FramesPerPacket; nf++) {
@@ -623,7 +624,7 @@ TEST(receiver, seqnum_reorder) {
         }
 
         for (ssize_t np = ReorderWindow - 1; np >= 0; np--) {
-            packet_writer.shift_to(pos + size_t(np), SamplesPerPacket, ChMask);
+            packet_writer.shift_to(pos + size_t(np), SamplesPerPacket, sample_spec);
             packet_writer.write_packets(1, SamplesPerPacket, ChMask);
         }
 
@@ -645,9 +646,11 @@ TEST(receiver, seqnum_late) {
     PacketWriter packet_writer(allocator, receiver, rtp_composer, format_map, packet_pool,
                                byte_buffer_pool, PayloadType, src1, port1.address);
 
+    audio::SampleSpec sample_spec = audio::SampleSpec();
+    sample_spec.setChannels(ChMask);
     packet_writer.write_packets(Latency / SamplesPerPacket, SamplesPerPacket, ChMask);
     packet_writer.shift_to(Latency / SamplesPerPacket + DelayedPackets, SamplesPerPacket,
-                           ChMask);
+                           sample_spec);
 
     for (size_t np = 0; np < Latency / SamplesPerPacket; np++) {
         for (size_t nf = 0; nf < FramesPerPacket; nf++) {
@@ -669,7 +672,7 @@ TEST(receiver, seqnum_late) {
         packet_writer.write_packets(1, SamplesPerPacket, ChMask);
     }
 
-    packet_writer.shift_to(Latency / SamplesPerPacket, SamplesPerPacket, ChMask);
+    packet_writer.shift_to(Latency / SamplesPerPacket, SamplesPerPacket, sample_spec);
     packet_writer.write_packets(DelayedPackets, SamplesPerPacket, ChMask);
 
     for (size_t np = 0; np < Latency / SamplesPerPacket; np++) {

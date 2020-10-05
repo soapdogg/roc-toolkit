@@ -75,10 +75,10 @@ TEST_GROUP(pcm_funcs) {
     }
 
     void check(const audio::sample_t* samples, size_t num_samples,
-               packet::channel_mask_t channels) {
+               SampleSpec& sample_spec) {
         size_t n = 0;
 
-        for (; n < num_samples * packet::num_channels(channels); n++) {
+        for (; n < num_samples * sample_spec.num_channels(); n++) {
             DOUBLES_EQUAL((double)samples[n], (double)output[n], Epsilon);
         }
 
@@ -124,7 +124,9 @@ TEST(pcm_funcs, encode_decode_1ch) {
     encode(bp, samples, 0, NumSamples, 0x1);
     decode(bp, 0, NumSamples, 0x1);
 
-    check(samples, NumSamples, 0x1);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x1);
+    check(samples, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, encode_decode_2ch) {
@@ -145,7 +147,9 @@ TEST(pcm_funcs, encode_decode_2ch) {
     encode(bp, samples, 0, NumSamples, 0x3);
     decode(bp, 0, NumSamples, 0x3);
 
-    check(samples, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(samples, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, encode_mask_subset) {
@@ -174,7 +178,9 @@ TEST(pcm_funcs, encode_mask_subset) {
         0.0f, 0.5f, //
     };
 
-    check(output, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, encode_mask_superset) {
@@ -203,7 +209,9 @@ TEST(pcm_funcs, encode_mask_superset) {
         -0.5f, 0.5f, //
     };
 
-    check(output, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, encode_mask_overlap) {
@@ -232,7 +240,9 @@ TEST(pcm_funcs, encode_mask_overlap) {
         -0.5f, 0.0f, //
     };
 
-    check(output, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, decode_mask_subset) {
@@ -261,7 +271,9 @@ TEST(pcm_funcs, decode_mask_subset) {
         0.5f, //
     };
 
-    check(output, NumSamples, 0x2);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x2);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, decode_mask_superset) {
@@ -290,7 +302,9 @@ TEST(pcm_funcs, decode_mask_superset) {
         -0.5f, 0.5f, 0.0f, //
     };
 
-    check(output, NumSamples, 0x7);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x7);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, decode_mask_overlap) {
@@ -319,7 +333,9 @@ TEST(pcm_funcs, decode_mask_overlap) {
         0.5f, 0.0f, //
     };
 
-    check(output, NumSamples, 0x6);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x6);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, encode_incremental) {
@@ -354,7 +370,9 @@ TEST(pcm_funcs, encode_incremental) {
 
     decode(bp, 0, NumSamples, 0x3);
 
-    check(output, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, decode_incremenal) {
@@ -381,7 +399,9 @@ TEST(pcm_funcs, decode_incremenal) {
         -0.2f, 0.2f, //
     };
 
-    check(output1, Off, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output1, Off, sample_spec);
 
     decode(bp, Off, NumSamples - Off, 0x1);
 
@@ -391,7 +411,9 @@ TEST(pcm_funcs, decode_incremenal) {
         -0.5f, //
     };
 
-    check(output2, NumSamples - Off, 0x1);
+    
+    sample_spec.setChannels(0x1);
+    check(output2, NumSamples - Off, sample_spec);
 
     decode(bp, Off, NumSamples - Off, 0x2);
 
@@ -401,7 +423,9 @@ TEST(pcm_funcs, decode_incremenal) {
         0.5f, //
     };
 
-    check(output3, NumSamples - Off, 0x2);
+    
+    sample_spec.setChannels(0x2);
+    check(output3, NumSamples - Off, sample_spec);
 }
 
 TEST(pcm_funcs, encode_truncate) {
@@ -439,7 +463,7 @@ TEST(pcm_funcs, encode_truncate) {
 
     decode(bp, 0, NumSamples, 0x3);
 
-    check(output, NumSamples, 0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 TEST(pcm_funcs, decode_truncate) {
@@ -474,7 +498,9 @@ TEST(pcm_funcs, decode_truncate) {
         0.0f,  0.0f, //
     };
 
-    check(output, NumSamples, 0x3);
+    SampleSpec sample_spec = SampleSpec();
+    sample_spec.setChannels(0x3);
+    check(output, NumSamples, sample_spec);
 }
 
 } // namespace audio

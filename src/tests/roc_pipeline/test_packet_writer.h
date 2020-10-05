@@ -65,11 +65,11 @@ public:
 
     void shift_to(size_t num_packets,
                   size_t samples_per_packet,
-                  packet::channel_mask_t channels) {
+                  audio::SampleSpec sample_spec) {
         seqnum_ = packet::seqnum_t(num_packets);
         timestamp_ = packet::timestamp_t(num_packets * samples_per_packet);
         offset_ =
-            uint8_t(num_packets * samples_per_packet * packet::num_channels(channels));
+            uint8_t(num_packets * samples_per_packet * sample_spec.num_channels());
     }
 
     uint8_t offset() const {

@@ -10,6 +10,7 @@
 
 #include "roc_audio/pcm_decoder.h"
 #include "roc_audio/pcm_funcs.h"
+#include "roc_audio/sample_spec.h"
 #include "roc_core/buffer_pool.h"
 #include "roc_core/heap_allocator.h"
 #include "roc_packet/packet_pool.h"
@@ -58,8 +59,12 @@ TEST_GROUP(sender) {
 
     PortConfig source_port;
     PortConfig repair_port;
+    audio::SampleSpec sample_spec;
 
     void setup() {
+        sample_spec = audio::SampleSpec();
+        sample_spec.setChannels(ChMask);
+        
         source_port.address = new_address(1);
         source_port.protocol = Proto_RTP;
 
@@ -91,7 +96,7 @@ TEST(sender, write) {
                                PayloadType, source_port.address);
 
     for (size_t np = 0; np < ManyFrames / FramesPerPacket; np++) {
-        packet_reader.read_packet(SamplesPerPacket, ChMask);
+        packet_reader.read_packet(SamplesPerPacket, sample_spec);
     }
 
     CHECK(!queue.read());
@@ -121,7 +126,7 @@ TEST(sender, frame_size_small) {
                                PayloadType, source_port.address);
 
     for (size_t np = 0; np < ManySmallFrames / SmallFramesPerPacket; np++) {
-        packet_reader.read_packet(SamplesPerPacket, ChMask);
+        packet_reader.read_packet(SamplesPerPacket, sample_spec);
     }
 
     CHECK(!queue.read());
@@ -151,7 +156,7 @@ TEST(sender, frame_size_large) {
                                PayloadType, source_port.address);
 
     for (size_t np = 0; np < ManyLargeFrames * PacketsPerLargeFrame; np++) {
-        packet_reader.read_packet(SamplesPerPacket, ChMask);
+        packet_reader.read_packet(SamplesPerPacket, sample_spec);
     }
 
     CHECK(!queue.read());
