@@ -124,10 +124,11 @@ ReceiverSession::ReceiverSession(const ReceiverSessionConfig& session_config,
     if (session_config.watchdog.no_playback_timeout != 0
         || session_config.watchdog.broken_playback_timeout != 0
         || session_config.watchdog.frame_status_window != 0) {
+        audio::SampleSpec sample_spec = audio::SampleSpec(common_config.output_sample_spec.getSampleRate(),
+                                                    session_config.sample_spec.getChannels());
         watchdog_.reset(new (allocator_) audio::Watchdog(
-                            *areader, session_config.sample_spec.num_channels(),
-                            session_config.watchdog, common_config.output_sample_spec.getSampleRate(),
-                            allocator_),
+                            *areader, session_config.watchdog, 
+                            sample_spec, allocator_),
                         allocator_);
         if (!watchdog_ || !watchdog_->valid()) {
             return;
