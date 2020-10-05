@@ -80,10 +80,9 @@ private:
     typedef int32_t signed_fixedpoint_t;
     typedef int64_t signed_long_fixedpoint_t;
 
-    const size_t channels_num_;
-
+    SampleSpec sample_spec_;
     inline size_t channelize_index(const size_t i, const size_t ch_offset) const {
-        return i * channels_num_ + ch_offset;
+        return i * sample_spec_.num_channels() + ch_offset;
     }
 
     //! Computes single sample of the particular audio channel.

@@ -76,14 +76,14 @@ Resampler::Resampler(core::IAllocator& allocator,
                      const ResamplerConfig& config,
                      const SampleSpec& sample_spec,
                      size_t frame_size)
-    : channels_num_(sample_spec.num_channels())
+    : sample_spec_(sample_spec)
     , prev_frame_(NULL)
     , curr_frame_(NULL)
     , next_frame_(NULL)
     , out_frame_pos_(0)
     , scaling_(1.0)
     , frame_size_(frame_size)
-    , frame_size_ch_(channels_num_ ? frame_size / channels_num_ : 0)
+    , frame_size_ch_(sample_spec_.num_channels() ? frame_size / sample_spec_.num_channels() : 0)
     , window_size_(config.window_size)
     , qt_half_sinc_window_size_(float_to_fixedpoint(window_size_))
     , window_interp_(config.window_interp)
@@ -108,7 +108,7 @@ Resampler::Resampler(core::IAllocator& allocator,
             "resampler: initializing: "
             "window_interp=%lu window_size=%lu frame_size=%lu channels_num=%lu",
             (unsigned long)window_interp_, (unsigned long)window_size_,
-            (unsigned long)frame_size_, (unsigned long)channels_num_);
+            (unsigned long)frame_size_, (unsigned long)sample_spec_.num_channels());
 
     valid_ = true;
 }
@@ -169,7 +169,7 @@ bool Resampler::resample_buff(Frame& out) {
     roc_panic_if(!curr_frame_);
     roc_panic_if(!next_frame_);
 
-    for (; out_frame_pos_ < out.size(); out_frame_pos_ += channels_num_) {
+    for (; out_frame_pos_ < out.size(); out_frame_pos_ += sample_spec_.num_channels()) {
         if (qt_sample_ >= qt_frame_size_) {
             return false;
         }
@@ -182,7 +182,7 @@ bool Resampler::resample_buff(Frame& out) {
         }
 
         sample_t* out_data = out.data();
-        for (size_t channel = 0; channel < channels_num_; ++channel) {
+        for (size_t channel = 0; channel < sample_spec_.num_channels(); ++channel) {
             out_data[out_frame_pos_ + channel] = resample_(channel);
         }
         qt_sample_ += qt_dt_;
@@ -192,28 +192,28 @@ bool Resampler::resample_buff(Frame& out) {
 }
 
 bool Resampler::check_config_() const {
-    if (channels_num_ < 1) {
+    if (sample_spec_.num_channels() < 1) {
         roc_log(LogError, "resampler: invalid num_channels: num_channels=%lu",
-                (unsigned long)channels_num_);
+                (unsigned long)sample_spec_.num_channels());
         return false;
     }
 
-    if (frame_size_ != frame_size_ch_ * channels_num_) {
+    if (frame_size_ != frame_size_ch_ * sample_spec_.num_channels()) {
         roc_log(LogError,
                 "resampler: frame_size is not multiple of num_channels:"
                 " frame_size=%lu num_channels=%lu",
-                (unsigned long)frame_size_, (unsigned long)channels_num_);
+                (unsigned long)frame_size_, (unsigned long)sample_spec_.num_channels());
         return false;
     }
 
     const size_t max_frame_size =
-        (((fixedpoint_t)(signed_fixedpoint_t)-1 >> FRACT_BIT_COUNT) + 1) * channels_num_;
+        (((fixedpoint_t)(signed_fixedpoint_t)-1 >> FRACT_BIT_COUNT) + 1) * sample_spec_.num_channels();
     if (frame_size_ > max_frame_size) {
         roc_log(LogError,
                 "resampler: frame_size is too much: "
                 "max_frame_size=%lu frame_size=%lu num_channels=%lu",
                 (unsigned long)max_frame_size, (unsigned long)frame_size_,
-                (unsigned long)channels_num_);
+                (unsigned long)sample_spec_.num_channels());
         return false;
     }
 
@@ -351,7 +351,7 @@ sample_t Resampler::resample_(const size_t channel_offset) {
     size_t i;
 
     // Run through previous frame.
-    for (i = ind_begin_prev; i < ind_end_prev; i += channels_num_) {
+    for (i = ind_begin_prev; i < ind_end_prev; i += sample_spec_.num_channels()) {
         accumulator += prev_frame_[i] * sinc_(qt_sinc_cur, f_sinc_cur_fract);
         qt_sinc_cur -= qt_sinc_inc;
     }
@@ -361,12 +361,12 @@ sample_t Resampler::resample_(const size_t channel_offset) {
 
     accumulator += curr_frame_[i] * sinc_(qt_sinc_cur, f_sinc_cur_fract);
     while (qt_sinc_cur >= qt_sinc_step_) {
-        i += channels_num_;
+        i += sample_spec_.num_channels();
         qt_sinc_cur -= qt_sinc_inc;
         accumulator += curr_frame_[i] * sinc_(qt_sinc_cur, f_sinc_cur_fract);
     }
 
-    i += channels_num_;
+    i += sample_spec_.num_channels();
 
     roc_panic_if(i > channelize_index(frame_size_ch_, channel_offset));
 
@@ -379,13 +379,13 @@ sample_t Resampler::resample_(const size_t channel_offset) {
     f_sinc_cur_fract = fractional(qt_sinc_cur << window_interp_bits_);
 
     // Run through right side of the window, increasing qt_sinc_cur.
-    for (; i <= ind_end_cur; i += channels_num_) {
+    for (; i <= ind_end_cur; i += sample_spec_.num_channels()) {
         accumulator += curr_frame_[i] * sinc_(qt_sinc_cur, f_sinc_cur_fract);
         qt_sinc_cur += qt_sinc_inc;
     }
 
     // Next frames run.
-    for (i = ind_begin_next; i < ind_end_next; i += channels_num_) {
+    for (i = ind_begin_next; i < ind_end_next; i += sample_spec_.num_channels()) {
         accumulator += next_frame_[i] * sinc_(qt_sinc_cur, f_sinc_cur_fract);
         qt_sinc_cur += qt_sinc_inc;
     }

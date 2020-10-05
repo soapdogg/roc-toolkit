@@ -76,8 +76,7 @@ private:
     packet::PacketPool& packet_pool_;
     core::BufferPool<uint8_t>& buffer_pool_;
 
-    const packet::channel_mask_t channels_;
-    const size_t num_channels_;
+    SampleSpec sample_spec_;
     const size_t samples_per_packet_;
     const unsigned int payload_type_;
     const size_t payload_size_;

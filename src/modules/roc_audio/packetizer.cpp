@@ -27,8 +27,7 @@ Packetizer::Packetizer(packet::IWriter& writer,
     , payload_encoder_(payload_encoder)
     , packet_pool_(packet_pool)
     , buffer_pool_(buffer_pool)
-    , channels_(sample_spec.getChannels())
-    , num_channels_(sample_spec.num_channels())
+    , sample_spec_(sample_spec)
     , samples_per_packet_(
           (packet::timestamp_t)packet::timestamp_from_ns(packet_length, sample_spec.getSampleRate()))
     , payload_type_(payload_type)
@@ -38,16 +37,16 @@ Packetizer::Packetizer(packet::IWriter& writer,
     , seqnum_((packet::seqnum_t)core::random(packet::seqnum_t(-1)))
     , timestamp_((packet::timestamp_t)core::random(packet::timestamp_t(-1))) {
     roc_log(LogDebug, "packetizer: initializing: n_channels=%lu samples_per_packet=%lu",
-            (unsigned long)num_channels_, (unsigned long)samples_per_packet_);
+            (unsigned long)sample_spec_.num_channels(), (unsigned long)samples_per_packet_);
 }
 
 void Packetizer::write(Frame& frame) {
-    if (frame.size() % num_channels_ != 0) {
+    if (frame.size() % sample_spec_.num_channels() != 0) {
         roc_panic("packetizer: unexpected frame size");
     }
 
     const sample_t* buffer_ptr = frame.data();
-    size_t buffer_samples = frame.size() / num_channels_;
+    size_t buffer_samples = frame.size() / sample_spec_.num_channels();
 
     while (buffer_samples != 0) {
         if (!packet_) {
@@ -60,12 +59,11 @@ void Packetizer::write(Frame& frame) {
         if (ns > (samples_per_packet_ - packet_pos_)) {
             ns = (samples_per_packet_ - packet_pos_);
         }
-        SampleSpec sample_spec = SampleSpec();
-        sample_spec.setChannels(channels_);
-        const size_t actual_ns = payload_encoder_.write(buffer_ptr, ns, sample_spec);
+
+        const size_t actual_ns = payload_encoder_.write(buffer_ptr, ns, sample_spec_);
         roc_panic_if_not(actual_ns == ns);
 
-        buffer_ptr += actual_ns * num_channels_;
+        buffer_ptr += actual_ns * sample_spec_.num_channels();
         buffer_samples -= actual_ns;
 
         packet_pos_ += actual_ns;

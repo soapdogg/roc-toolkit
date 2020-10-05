@@ -25,24 +25,23 @@ ProfilingWriter::ProfilingWriter(IWriter& writer,
     , rate_limiter_(LogInterval)
     , avg_speed_(0)
     , avg_len_(0)
-    , sample_rate_(sample_spec.getSampleRate())
-    , num_channels_(sample_spec.num_channels()) {
-    if (num_channels_ == 0) {
+    , sample_spec_(sample_spec) {
+    if (sample_spec_.num_channels() == 0) {
         roc_panic("profiling writer: n_channels is zero");
     }
-    if (sample_rate_ == 0) {
+    if (sample_spec_.getSampleRate() == 0) {
         roc_panic("profiling writer: sample_rate is zero");
     }
 }
 
 void ProfilingWriter::write(Frame& frame) {
-    if (frame.size() % num_channels_ != 0) {
+    if (frame.size() % sample_spec_.num_channels() != 0) {
         roc_panic("profiling writer: unexpected frame size");
     }
 
     const core::nanoseconds_t elapsed = write_(frame);
 
-    const double speed = (double)frame.size() / num_channels_ / elapsed * core::Second;
+    const double speed = (double)frame.size() / sample_spec_.num_channels() / elapsed * core::Second;
 
     update_(speed);
 }
@@ -61,7 +60,7 @@ void ProfilingWriter::update_(double speed) {
 
     if (rate_limiter_.allow()) {
         roc_log(LogDebug, "profiling writer: %lu sample/sec (%.2f sec/sec)",
-                (unsigned long)avg_speed_, avg_speed_ / sample_rate_);
+                (unsigned long)avg_speed_, avg_speed_ / sample_spec_.getSampleRate());
     }
 }
 

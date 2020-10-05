@@ -42,8 +42,7 @@ private:
     double avg_speed_;
     double avg_len_;
 
-    const size_t sample_rate_;
-    const size_t num_channels_;
+    SampleSpec sample_spec_;
 };
 
 } // namespace audio
