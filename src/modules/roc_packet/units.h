@@ -63,11 +63,6 @@ inline bool timestamp_le(timestamp_t a, timestamp_t b) {
     return timestamp_diff(a, b) <= 0;
 }
 
-//! Convert number of samples to nanoseconds.
-inline core::nanoseconds_t timestamp_to_ns(timestamp_diff_t ts, size_t sample_rate) {
-    return core::nanoseconds_t(roundf(float(ts) / sample_rate * core::Second));
-}
-
 //! Bitmask of channels present in audio packet.
 typedef uint32_t channel_mask_t;
 
