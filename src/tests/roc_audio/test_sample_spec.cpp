@@ -18,10 +18,6 @@ TEST_GROUP(sample_spec) {};
 TEST(sample_spec, num_channels) {
     SampleSpec sample_spec = SampleSpec();
     sample_spec.setChannels(0x0);
-    
-    
-    
-
     LONGS_EQUAL(0, sample_spec.num_channels());
 
     sample_spec.setChannels(0x1);

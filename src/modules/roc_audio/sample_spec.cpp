@@ -16,12 +16,14 @@ namespace audio {
 SampleSpec::SampleSpec() {
     sample_rate_ = DefaultSampleRate;
     channels_ = DefaultChannelMask;
+    num_channels_ = calc_num_channels();
 }
 
 SampleSpec::SampleSpec(size_t sample_rate,
                        packet::channel_mask_t channels) {
     sample_rate_ = sample_rate;
     channels_ = channels;
+    num_channels_ = calc_num_channels();
 }
 
 size_t SampleSpec::getSampleRate() const {
@@ -38,9 +40,14 @@ packet::channel_mask_t SampleSpec::getChannels() const {
 
 void SampleSpec::setChannels(packet::channel_mask_t channels) {
     channels_ = channels;
+    num_channels_ = calc_num_channels();
 }
 
 size_t SampleSpec::num_channels() const {
+    return num_channels_;
+}
+
+size_t SampleSpec::calc_num_channels() {
     size_t n_ch = 0;
     packet::channel_mask_t ch_mask = channels_;
     for (; ch_mask != 0; ch_mask >>= 1) {

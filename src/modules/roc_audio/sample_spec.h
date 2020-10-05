@@ -15,7 +15,7 @@
 
 namespace roc {
 namespace audio {
-    
+
 //! Default sample rate, number of samples per second.
 const size_t DefaultSampleRate = 44100;
 
@@ -36,6 +36,8 @@ public:
 private:
     size_t sample_rate_;
     packet::channel_mask_t channels_;
+    size_t num_channels_;
+    size_t calc_num_channels();
 };
 
 } // namespace audio
